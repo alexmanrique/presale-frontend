@@ -61,7 +61,7 @@ export function usePresaleData(userAddress?: `0x${string}`) {
   const maxDisplay = maxSellingAmount !== undefined ? formatUnits(maxSellingAmount, 18) : '—'
   const userBalanceDisplay = userTokenBalance !== undefined ? formatUnits(userTokenBalance, 18) : '0'
   const priceUSD = currentPhaseData.price !== undefined
-    ? (Number(currentPhaseData.price) / 1e6).toFixed(4)
+    ? (Number(currentPhaseData.price) / 1e6).toFixed(8)
     : '—'
 
   return {

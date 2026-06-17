@@ -93,7 +93,7 @@ export function PresaleStats() {
         <div className="grid grid-cols-3 gap-2">
           {phases.map((phase, i) => {
             const price = phase.price !== undefined
-              ? `$${(Number(phase.price) / 1e6).toFixed(4)}`
+              ? `$${(Number(phase.price) / 1e6).toFixed(8)}`
               : '—'
             const isActive = i === phaseIndex
             return (
