@@ -33,7 +33,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 }
 
 export function PresaleStats() {
-  const { phaseIndex, soldDisplay, maxDisplay, priceUSD, startingTime, endingTime, presaleActive, presaleNotStarted, presaleEnded, isLoading } = usePresaleData()
+  const { phaseIndex, phases, soldDisplay, maxDisplay, priceUSD, startingTime, endingTime, presaleActive, presaleNotStarted, presaleEnded, isLoading } = usePresaleData()
 
   const countdown = useCountdown(presaleActive ? endingTime : presaleNotStarted ? startingTime : undefined)
 
@@ -85,6 +85,33 @@ export function PresaleStats() {
             className="bg-brand h-2 rounded-full transition-all"
             style={{ width: `${progressPct}%` }}
           />
+        </div>
+      </div>
+
+      <div>
+        <h3 className="text-sm text-gray-400 mb-2">Price per phase</h3>
+        <div className="grid grid-cols-3 gap-2">
+          {phases.map((phase, i) => {
+            const price = phase.price !== undefined
+              ? `$${(Number(phase.price) / 1e6).toFixed(4)}`
+              : '—'
+            const isActive = i === phaseIndex
+            return (
+              <div
+                key={i}
+                className={`rounded-lg p-3 text-center ${
+                  isActive
+                    ? 'bg-brand/20 border border-brand'
+                    : 'bg-gray-800'
+                }`}
+              >
+                <span className="text-xs text-gray-400 block">Phase {i + 1}</span>
+                <span className={`font-semibold text-sm ${isActive ? 'text-brand' : 'text-white'}`}>
+                  {price}
+                </span>
+              </div>
+            )
+          })}
         </div>
       </div>
 
