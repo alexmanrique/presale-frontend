@@ -17,12 +17,21 @@ function FundSection() {
   const { maxSellingAmount, refetch } = usePresaleData()
   const { address } = useAccount()
 
+  const { data: contractTokenBalance } = useReadContract({
+    address: SALE_TOKEN_ADDRESS,
+    abi: ERC20_ABI,
+    functionName: 'balanceOf',
+    args: [PRESALE_ADDRESS],
+  })
+
+  const alreadyFunded = contractTokenBalance !== undefined && contractTokenBalance > 0n
+
   const { data: allowance, refetch: refetchAllowance } = useReadContract({
     address: SALE_TOKEN_ADDRESS,
     abi: ERC20_ABI,
     functionName: 'allowance',
     args: address && maxSellingAmount ? [address, PRESALE_ADDRESS] : undefined,
-    query: { enabled: !!address && !!maxSellingAmount },
+    query: { enabled: !!address && !!maxSellingAmount && !alreadyFunded },
   })
 
   const needsApproval = !allowance || !maxSellingAmount || allowance < maxSellingAmount
@@ -45,6 +54,14 @@ function FundSection() {
   const handleFund = () => {
     fund({ address: PRESALE_ADDRESS, abi: PRESALE_ABI, functionName: 'fund' })
     refetch()
+  }
+
+  if (alreadyFunded) {
+    return (
+      <AdminAction label="Fund contract">
+        <p className="text-sm text-green-400">Contract already funded.</p>
+      </AdminAction>
+    )
   }
 
   return (
