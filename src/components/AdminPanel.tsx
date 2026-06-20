@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { parseUnits, isAddress } from 'viem'
 import { PRESALE_ADDRESS, PRESALE_ABI, ERC20_ABI, SALE_TOKEN_ADDRESS } from '../config/contracts'
@@ -17,7 +17,7 @@ function FundSection() {
   const { maxSellingAmount, refetch } = usePresaleData()
   const { address } = useAccount()
 
-  const { data: allowance } = useReadContract({
+  const { data: allowance, refetch: refetchAllowance } = useReadContract({
     address: SALE_TOKEN_ADDRESS,
     abi: ERC20_ABI,
     functionName: 'allowance',
@@ -29,6 +29,10 @@ function FundSection() {
 
   const { writeContract: approve, data: approveTxHash, isPending: isApprovePending } = useWriteContract()
   const { isLoading: isApproveConfirming, isSuccess: isApproveSuccess } = useWaitForTransactionReceipt({ hash: approveTxHash })
+
+  useEffect(() => {
+    if (isApproveSuccess) refetchAllowance()
+  }, [isApproveSuccess, refetchAllowance])
 
   const { writeContract: fund, data: fundTxHash, isPending: isFundPending } = useWriteContract()
   const { isLoading: isFundConfirming, isSuccess: isFundSuccess } = useWaitForTransactionReceipt({ hash: fundTxHash })
